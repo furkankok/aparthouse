@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: .
+    network_mode: "host"
+    volumes:
+      - .:/api
+    command: "python manage.py runserver"
+    restart: always
+
+
+
+
+    
