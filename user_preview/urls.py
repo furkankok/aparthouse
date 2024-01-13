@@ -5,5 +5,6 @@ from user_preview import views
 
 urlpatterns = [
     path('register', views.register, name='register'),
+    path('email-verify', views.email_verify, name='email-verify'),
 
 ]
