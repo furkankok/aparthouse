@@ -2,11 +2,11 @@
 
 
 giriş kayıt ol işlemleri olacak.
-👍 - giriş formu recapha 200tl
-👍 - kayıt ol formu recapha 400tl
-👍 -- email onayı bekletme, emailiniz onaylandı ekranı 500tl ( email templati hazırlancak )
-👍 - şifremi unuttum recapha 250tl  ( email templati hazırlancak )
-👍 -- şifre onaylama formu 300tl
+- 👍 giriş formu recapha 200tl
+- 👍 kayıt ol formu recapha 400tl
+- 👍 email onayı bekletme, emailiniz onaylandı ekranı 500tl ( email templati hazırlancak )
+- 👍 şifremi unuttum recapha 250tl  ( email templati hazırlancak )
+- 👍 şifre onaylama formu 300tl
 
 
 bildirim sistemi: apart onayları, yorum onayları beklenen tüm işler buraya listelenip red veya kabul görecek 
