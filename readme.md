@@ -1,7 +1,11 @@
+## Postman
+- [Postman](https://documenter.getpostman.com/view/16541534/2s9YsNeANR) - API test etmek için kullanılan program.
+
+
 👍  oauth2 kurulumu 200 tl
 
 
-giriş kayıt ol işlemleri olacak.
+## giriş kayıt ol işlemleri olacak.
 - 👍 giriş formu recapha 200tl
 - 👍 kayıt ol formu recapha 400tl
 - 👍 email onayı bekletme, emailiniz onaylandı ekranı 500tl ( email templati hazırlancak )
@@ -9,7 +13,8 @@ giriş kayıt ol işlemleri olacak.
 - 👍 şifre onaylama formu 300tl
 
 
-bildirim sistemi: apart onayları, yorum onayları beklenen tüm işler buraya listelenip red veya kabul görecek 
+## bildirim sistemi
+- apart onayları, yorum onayları beklenen tüm işler buraya listelenip red veya kabul görecek 
 - ortak model, listeleme, modeli onaylama 500 tl
 
 apart ilan yönetimi: süper admin tüm apartları görüntüleyip tüm işlermeri yapabilecek, staff kullanıcı kendi apartlarını görecek, düzenleme yaptığı zaman onaya düşecek. 2500 tl
