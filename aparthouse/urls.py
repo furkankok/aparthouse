@@ -14,14 +14,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import json
 from django.contrib import admin
 from django.urls import include, path
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.contrib.auth import authenticate
 import requests
 from oauth2_provider.views import TokenView as OAuth2TokenView
 
 from utils import check_recaptcha
+from django.conf import settings
+from django.conf.urls.static import static
 
 class LoginToken(OAuth2TokenView):
     def post(self, request, *args, **kwargs):
@@ -35,6 +38,21 @@ class LoginToken(OAuth2TokenView):
                 return HttpResponse("Recaptcha is required", status=400)
             if not check_recaptcha(recaptcha):
                 return HttpResponse("Recaptcha is wrong", status=400)
+            data = {}
+            data["permissions"] = [perm.codename for perm in user.user_permissions.all()]
+            # user information as json
+            data["user"] = {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "is_staff": user.is_staff,
+                "is_superuser": user.is_superuser
+            }
+            response_json = json.loads(response.content)
+            response_json.update(data)
+            response = JsonResponse(response_json, content_type="application/json")
         return response
 
 urlpatterns = [
@@ -43,5 +61,7 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('o/login_token/', LoginToken.as_view()),
     path('user/', include('user_preview.urls')),
+    path('apart/', include('apart.urls')),
+    path('apart_admin/', include('apart_admin.urls')),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

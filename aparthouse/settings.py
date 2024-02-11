@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import sentry_sdk
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'oauth2_provider',
     'corsheaders',
-    'user_preview'
+    'user_preview',
+    'apart',
+    'apart_admin',
 ]
 
 MIDDLEWARE = [
@@ -124,6 +127,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -149,10 +156,17 @@ EMAIL_HOST_USER = 'furkankoksaldi28@gmail.com'
 EMAIL_HOST_PASSWORD = 'llgn ozek tiet paxe'
 
 
-RECAPTCHA_SECRET = "..."
+# NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6Lds1KMnAAAAAForux7vzs6OfM23C-a-XxUk_Vkq
+# NEXT_PUBLIC_RECAPTCHA_SECRET_KEY = 6Lds1KMnAAAAAKxn0NAMiw53XQhqtq0e8uQla1Sz
+
+RECAPTCHA_SECRET = "6Lds1KMnAAAAAKxn0NAMiw53XQhqtq0e8uQla1Sz"
+
+sentry_sdk.init(
+    dsn="https://13860885b7adf7703fea6b358e3d7c60@o4506722901098496.ingest.sentry.io/4506722903851008",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 
-
-
-
+BACKEND_URL = "http://37.148.212.196:8000"
 
