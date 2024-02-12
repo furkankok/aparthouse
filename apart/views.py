@@ -14,10 +14,12 @@ def apart_detail(request, apart_id):
 
     apart_images = ApartImage.objects.filter(apart=apart)
 
-    return success_response(data={
+    data = {
         "id": apart.id,
         "name": apart.name,
-        "price": apart.price,
+        "price_month": apart.price_month,
+        "price_year": apart.price_year,
+        "price_season": apart.price_season,
         "category": apart.category.to_dict() if apart.category else None,
         "phone": apart.phone,
         "info": apart.info,
@@ -29,8 +31,19 @@ def apart_detail(request, apart_id):
         "services": [service.to_dict() for service in apart.services.all()],
         "bill_details": [bill_detail.to_dict() for bill_detail in apart.bills.all()],
         "all_bills": [bill_detail.to_dict() for bill_detail in ApartBillDetail.objects.all()],
-        "images": [settings.BACKEND_URL + image.image.url for image in apart_images]
-    })
+        "images": [settings.BACKEND_URL + image.image.url for image in apart_images],
+        "town": None,
+        "city": None,
+
+    }
+
+    if apart.town:
+        data["town"] = apart.town.to_dict()
+        data["city"] = apart.town.city.to_dict()
+
+    
+
+    return success_response(data=data)
 
 
 

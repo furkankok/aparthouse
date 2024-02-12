@@ -81,16 +81,47 @@ class ApartBillDetail(models.Model):
         }
 
 
+class City(models.Model):
+    name = models.CharField(max_length=255)
+    country = models.CharField(max_length=255, null=True, blank=True, default='Türkiye')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "country": self.country
+        }
+
+class Town(models.Model):
+    name = models.CharField(max_length=255)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='towns')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "city": self.city.id
+        }
+
 class Apart(models.Model):
     name = models.CharField(max_length=255)
-    price = models.FloatField(null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
     category = models.ForeignKey(ApartCategory, on_delete=models.CASCADE, related_name='aparts', null=True, blank=True)
+    mail = models.EmailField(null=True, blank=True)
+    price_month = models.FloatField(null=True, blank=True)
+    price_year = models.FloatField(null=True, blank=True)
+    price_season = models.FloatField(null=True, blank=True)
 
     info = models.TextField(null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
+
+    town = models.ForeignKey(Town, on_delete=models.CASCADE, related_name='aparts', null=True, blank=True)
 
     universitys = models.ManyToManyField(ApartUniversity, related_name='aparts')
     services = models.ManyToManyField(ApartService, related_name='aparts')
