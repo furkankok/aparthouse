@@ -99,6 +99,3 @@ def reset_password(request):
 
     return success_response("Şifre değiştirildi")
 
-
-
-

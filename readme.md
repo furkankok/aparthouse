@@ -28,9 +28,9 @@ apart ilan yönetimi: süper admin tüm apartları görüntüleyip tüm işlerme
 
 apart bina yönetimi: " 1000 tl
 
-şehir yönetimi: sadece model oluşturulacak. 100 tl
+- 👍 şehir yönetimi: sadece model oluşturulacak. 100 tl
 
-üniversite listesi: super admin üniversite ekleyebilecek. 750 tl
+- 👍 üniversite listesi: super admin üniversite ekleyebilecek. 750 tl
 
 üye yönetimi: süper admin diğer tüm kullanıcıları görüp şifresini sıfırlayıp silip düzenleyebilecek. 500 tl
 

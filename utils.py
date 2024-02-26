@@ -1,13 +1,22 @@
-from django.conf import settings
-import requests
-from django.http import JsonResponse
+from functools import wraps
 
-def success_response(message="", data=None):
+import requests
+from django.conf import settings
+from django.http import HttpResponseForbidden, JsonResponse
+from oauth2_provider.decorators import protected_resource
+
+
+def success_response(message="", data=None, paginate=None):
     return JsonResponse({
         "status": "success",
         "message": message,
         "data": data,
-        "title": "Başarılı"
+        "title": "Başarılı",
+        "paginate": {
+            "count": paginate.count,
+            "num_pages": paginate.num_pages,
+            "page_range": list(paginate.page_range),
+        } if paginate else None
     })
 
 def error_response(message):
@@ -26,10 +35,6 @@ def check_recaptcha(token):
     return control['success']
 
 
-# check is staff decorator
-from django.http import HttpResponseForbidden
-from functools import wraps
-from oauth2_provider.decorators import protected_resource
 
 def is_staff(view_func):
     @protected_resource()

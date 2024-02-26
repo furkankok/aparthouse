@@ -3,7 +3,7 @@ from oauth2_provider.decorators import protected_resource
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from functools import wraps
-
+from django.core.paginator import Paginator
 from utils import error_response, success_response
 
 
@@ -74,19 +74,23 @@ class ModelToURL:
         data.delete()
         return success_response("Data deleted")
     
-    @method_decorator(protected_resource())
-    @method_decorator(require_http_methods(["POST"]))
-    @check_model_permission('view')
+    # @method_decorator(protected_resource())
+    @method_decorator(require_http_methods(["GET"]))
+    # @check_model_permission('view')
     def model_list(self, request):
         data = self.model.objects.all()
+        # pagination
+        paginate = Paginator(data, 50)
+        page = request.GET.get('page', 1)
+        data = paginate.page(page)
         data = [i.to_dict() for i in data]
-        return success_response(data)
+        return success_response(data, paginate=paginate)
 
     def get_urls(self):
         return include([
-            path('add', self.model_add),
-            path('change/<int:pk>', self.model_change),
-            path('view/<int:pk>', self.model_view),
-            path('delete/<int:pk>', self.model_delete),
+            # path('add', self.model_add),
+            # path('change/<int:pk>', self.model_change),
+            # path('view/<int:pk>', self.model_view),
+            # path('delete/<int:pk>', self.model_delete),
             path('', self.model_list),
         ])

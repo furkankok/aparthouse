@@ -1,0 +1,314 @@
+{% extends 'layout/base.html' %}
+
+
+{% block content %}
+
+
+
+<div class="animate__animated p-6 w-full sm:w-[800px] mx-auto" :class="[$store.app.animation]">
+    <!-- start main content section -->
+    <div>
+        <div class="grid grid-cols-1">
+            <!-- progress table -->
+            <div class="panel">
+                <div class="mb-5 flex items-center justify-between">
+                    <h5 class="text-lg font-semibold dark:text-white-light">APART EKLE</h5>
+
+                </div>
+                <div class="mb-5">
+                    <form class="grid gap-5" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div>
+                            <label for="apart-ismi">Apart İsmi</label>
+                            <input id="apart-ismi" type="text" placeholder="Apart İsmi Giriniz..." class="form-input"
+                                name="name" required />
+                        </div>
+
+                        <div>
+                            <label for="apart-kategori">Apart Kategori</label>
+                            <select id="apart-kategori" class="selectize" name="apart-category">
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="apart-kategori">Apart Ücreti</label>
+                            <div class="grid grid-cols-1  sm:flex justify-between gap-5"
+                                style="grid-auto-columns: auto;">
+                                <select class="selectize sm:w-[46%]" name="price-type">
+                                    {% for key, type in price_types %}
+                                    <option value="{{ type }}">{{ key }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <input type="text" placeholder="Apart Ücreti" class="form-input" name="price" />
+                            </div>
+
+                        </div>
+
+                        <div>
+                            <label for="apart-aciklama">Apart Açıklama</label>
+                            <textarea id="apart-aciklama" name="apart-aciklama" rows="4" class="form-textarea "
+                                placeholder="Apart Açıklaması..."></textarea>
+                        </div>
+
+                        <div>
+                            <label for="apart-adres">Apart Adres</label>
+                            <input type="text" placeholder="Apart Adres" class="form-input" name="apart-adres" />
+                        </div>
+
+                        <div>
+                            <label for="">Apart Konumu</label>
+                            <div id="map" style="height: 400px"></div>
+                            <input type="hidden" name="apart-lat">
+                            <input type="hidden" name="apart-lng">
+
+                        </div>
+
+
+                        <div>
+                            <label for="apart-kategori">İl İlçe</label>
+                            <div class="grid grid-cols-1  sm:flex justify-between gap-5"
+                                style="grid-auto-columns: auto;">
+                                <select class="selectize sm:w-[46%]" name="city">
+                                    {% for city in citys %}
+                                    <option value="{{ city.id }}">{{ city.name }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <select class="select-town sm:w-[46%]" name="town">
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div>
+
+                            <div class="">
+                                <label for="">Üniversite Ekle</label>
+                                <select class="" name="universitys">
+                                </select>
+                            </div>
+                            <div class="flex gap-5 items-center justify-between mt-5">
+                                <label style="width: 200px; text-wrap: wrap; font-weight: bold;">Üniversiteler</label>
+                                <label style="width: 100px; text-align: center;">Yürüme</label>
+                                <label style="width: 100px; text-align: center;">Otobüs</label>
+                                <label style="width: 100px; text-align: center;">Tramway</label>
+                                <label style="width: 50px; text-align: center;" class="university_delete">Sil</label>
+                            </div>
+                            <div class="university-list">
+                            </div>
+
+                        </div>
+
+                        <div>
+                            <label for="">Hizmetler</label>
+                            {% for service in services %}
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" class="form-checkbox" name="services" value="{{ service.id }}" />
+                                <span class=" text-white-dark">{{ service.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+
+                        <div>
+                            <label for="">Faturaya Dahil Olanlar</label>
+                            {% for bill in bills %}
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" class="form-checkbox" name="bills" value="{{ bill.id }}" />
+                                <span class=" text-white-dark">{{ bill.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <div>
+                            <label for="">Apart Resimleri</label>
+                            <div class="custom-file-container" data-upload-id="ApartImages"></div>
+
+                        </div>
+
+
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+<script src="/static/assets/js/file-upload-with-preview.iife.js"></script>
+<script src="/static/assets/js/jquery.js"></script>
+<script>
+    var select_bind;
+    var select_university;
+    document.addEventListener("DOMContentLoaded", function (e) {
+        var els = document.querySelectorAll(".selectize");
+        els.forEach(function (select) {
+            NiceSelect.bind(select, {
+                searchable: true
+            });
+        });
+        select_bind = NiceSelect.bind(document.querySelector('select[name="town"]'), { searchable: true });
+        select_university = NiceSelect.bind(document.querySelector('select[name="universitys"]'), { searchable: true });
+
+
+        const upload = new FileUploadWithPreview.FileUploadWithPreview('ApartImages', {
+            images: {
+                baseImage: '/static/assets/images/file-preview.svg',
+                backgroundImage: '',
+            },
+            multiple: true,
+        });
+
+
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            upload.cachedFileArray.forEach(function (file) {
+                formData.append('files', file);
+            });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/apart_admin/8/apart-ekle/', true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log('Form başarıyla gönderildi');
+                    // İsteğin başarılı olduğuna dair kullanıcıya bilgi verin veya sayfayı güncelleyin
+                } else {
+                    console.error('Form gönderimi başarısız');
+                    // İsteğin başarısız olduğuna dair kullanıcıya bilgi verin
+                }
+            };
+            xhr.send(formData);
+
+        });
+
+    });
+
+    (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })
+        ({ key: "AIzaSyAKjdWwTwMi4ATw7VdY5gmq0-HNephwzv8", v: "weekly" });
+
+
+    // Initialize and add the map
+    let map;
+    var marker;
+
+    async function initMap() {
+        const position = { lat: 39.77099406172531, lng: 30.50877604092886 };
+        // Request needed libraries.
+        //@ts-ignore
+        const { Map } = await google.maps.importLibrary("maps");
+
+        // The map, centered at Uluru
+        map = new Map(document.getElementById("map"), {
+            zoom: 12,
+            center: position,
+            mapId: "DEMO_MAP_ID",
+            disableDefaultUI: true,
+        });
+
+
+        google.maps.event.addListener(map, 'click', function (event) {
+            placeMarker(event.latLng);
+        });
+
+        function placeMarker(location) {
+            document.querySelector('input[name="apart-lat"]').value = location.lat();
+            document.querySelector('input[name="apart-lng"]').value = location.lng();
+            if (marker) {
+                marker.setMap(null);
+            }
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+    }
+
+    initMap();
+
+
+    function addUniversity(id, name) {
+        var html = `
+        <div class="flex gap-5 items-center justify-between mt-5">
+            <label style="width: 200px; text-wrap: wrap;">`+ name + `</label>
+            <input type="hidden"  class="form-input " name="university_id" value="`+ id + `" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="yurume" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="otobus" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="tramway" style="width: 100px;"/>
+            <div class="flex justify-center university-delete" style="width: 50px; text-align: center; cursor: pointer;" >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+        </div>
+        `;
+        if ($('input[name="' + id + '"]').length > 0) {
+            return;
+        }
+        $('.university-list').append(html);
+        $('.university-delete').on('click', function () {
+            $(this).parent().remove();
+        });
+
+    }
+
+    $('select[name="universitys"]').on('change', function () {
+        var university_id = $(this).val();
+        var university_name = $(this).find('option:selected').text();
+        addUniversity(university_id, university_name);
+    });
+
+
+
+
+    $('select[name="city"]').on('change', function () {
+        var city_id = $(this).val();
+        $.ajax({
+            url: '/apart_admin/get-town/',
+            type: 'GET',
+            data: {
+                city_id: city_id
+            },
+            success: function (data) {
+
+                var html = '';
+                for (var i = 0; i < data.towns.length; i++) {
+                    html += '<option value="' + data.towns[i].id + '">' + data.towns[i].name + '</option>';
+                }
+                $('select[name="town"]').html(html);
+                select_bind.update();
+
+                var html = '';
+                for (var i = 0; i < data.universitys.length; i++) {
+                    html += '<option value="' + data.universitys[i].id + '">' + data.universitys[i].name + '</option>';
+                }
+                $('select[name="universitys"]').html(html);
+                select_university.update();
+
+
+
+
+
+            }
+        });
+    });
+
+
+</script>
+
+
+{% endblock %}

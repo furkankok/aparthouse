@@ -1,0 +1,68 @@
+{% extends 'layout/base.html' %}
+
+
+{% block content %}
+
+
+
+<div class="animate__animated p-6 w-6/12 mx-auto" :class="[$store.app.animation]">
+    <!-- start main content section -->
+    <div>
+        <div class="grid grid-cols-1">
+            <!-- progress table -->
+            <div class="panel">
+                <div class="mb-5 flex items-center justify-between">
+                    <h5 class="text-lg font-semibold dark:text-white-light">FİRMA EKLE</h5>
+
+                </div>
+                <div class="mb-5">
+                    <form class="grid gap-5" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div>
+                            <label for="firma-ismi">Firma İsmi</label>
+                            <input id="firma-ismi" type="text" placeholder="Firma İsmi Giriniz..." class="form-input" name="name"
+                                required />
+                        </div>
+
+                        <div>
+                            <label for="firma-telefon">Firma Telefon</label>
+                            <input type="tel" placeholder="05320000000" pattern="[0]{1}[0-9]{3}[0-9]{3}[0-9]{2}[0-9]{2}" name="phone"
+                                maxlength="11" class="form-input" required />
+                        </div>
+
+                        <div>
+                            <label for="firma-mail">Firma E-posta</label>
+                            <input type="email" placeholder="ornek@mail.com" name="mail" class="form-input" required />
+                        </div>
+
+
+                        <div>
+                            <label for="firma-resim">Firma Resmi</label>
+                            <input id="firma-resim" type="file"
+                                class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
+                                name="image"
+                                required />
+                        </div>
+
+
+                        <div>
+                            <label for="firma-adres">Firma Adresi</label>
+                            <textarea id="firma-adres" name="address" rows="4" class="form-textarea "></textarea>
+                        </div>
+
+
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock %}
