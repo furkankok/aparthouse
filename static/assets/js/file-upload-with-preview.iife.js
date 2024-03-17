@@ -1119,7 +1119,8 @@ var FileUploadWithPreview = (function (exports) {
 
                             case 7:
                               blob = _context.sent;
-                              file = new File([blob], 'preset-file', {
+                              var name = path.split('/').pop();
+                              file = new File([blob], name, {
                                 type: blob.type || defaultType
                               });
 

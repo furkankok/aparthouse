@@ -15,5 +15,7 @@ urlpatterns = [
     path('firma-duzenle/<int:firm_id>/', views.firma_duzenle, name='firma_duzenle'),
     path('firma-sil/<int:firm_id>/', views.firma_sil, name='firma_sil'),
     path('<int:firm_id>/apart-ekle/', views.apart_ekle, name='apart_ekle'),
+    path('<int:firm_id>/apartlar/', views.apartlar, name='apartlar'),
+    path('<int:firm_id>/apart/<int:apart_id>/duzenle/', views.apart_duzenle, name='apart_duzenle'),
     path('get-town/', views.get_town, name='get_town'),
 ]

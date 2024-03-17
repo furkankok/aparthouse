@@ -223,6 +223,9 @@ class Apart(models.Model):
     bills = models.ManyToManyField(ApartBillDetail, related_name='aparts')
 
     created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

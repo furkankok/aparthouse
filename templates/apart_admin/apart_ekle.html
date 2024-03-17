@@ -12,23 +12,34 @@
             <!-- progress table -->
             <div class="panel">
                 <div class="mb-5 flex items-center justify-between">
-                    <h5 class="text-lg font-semibold dark:text-white-light">APART EKLE</h5>
+                    <h5 class="text-lg font-semibold dark:text-white-light">
+                        APART
+                        {% if apart %}
+                        DÜZENLE
+                        {% else %}
+                        EKLE
+                        {% endif %}
+                    </h5>
 
                 </div>
                 <div class="mb-5">
-                    <form class="grid gap-5" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'apart_ekle' firm.id %}" class="grid gap-5" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        {% if apart %}
+                        <input type="hidden" name="apart-id" value="{{ apart.id }}" />
+                        {% endif %}
                         <div>
                             <label for="apart-ismi">Apart İsmi</label>
                             <input id="apart-ismi" type="text" placeholder="Apart İsmi Giriniz..." class="form-input"
-                                name="name" required />
+                                name="name" required value="{{ apart.name }}" />
                         </div>
 
                         <div>
                             <label for="apart-kategori">Apart Kategori</label>
-                            <select id="apart-kategori" class="selectize" name="apart-category">
+                            <select id="apart-kategori" class="selectize" name="apart-category"
+                                placeholder="Apart Kategori...">
                                 {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                <option value="{{ category.id }}" {% if category.id == apart.category.id %} selected {% endif %}>{{ category.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -39,11 +50,12 @@
                                 style="grid-auto-columns: auto;">
                                 <select class="selectize sm:w-[46%]" name="price-type">
                                     {% for key, type in price_types %}
-                                    <option value="{{ type }}">{{ key }}</option>
+                                    <option value="{{ key }}" {% if apart.price_type == key %} selected {% endif %}>{{ key }}</option>
                                     {% endfor %}
                                 </select>
 
-                                <input type="text" placeholder="Apart Ücreti" class="form-input" name="price" />
+                                <input type="text" placeholder="Apart Ücreti" class="form-input" name="price" required
+                                    value="{{ apart.price }}" />
                             </div>
 
                         </div>
@@ -51,12 +63,13 @@
                         <div>
                             <label for="apart-aciklama">Apart Açıklama</label>
                             <textarea id="apart-aciklama" name="apart-aciklama" rows="4" class="form-textarea "
-                                placeholder="Apart Açıklaması..."></textarea>
+                                placeholder="Apart Açıklaması...">{{ apart.info }}</textarea>
                         </div>
 
                         <div>
                             <label for="apart-adres">Apart Adres</label>
-                            <input type="text" placeholder="Apart Adres" class="form-input" name="apart-adres" />
+                            <input type="text" placeholder="Apart Adres" class="form-input" name="apart-adres" required
+                                value="{{ apart.address }}" />
                         </div>
 
                         <div>
@@ -69,17 +82,24 @@
 
 
                         <div>
-                            <label for="apart-kategori">İl İlçe</label>
                             <div class="grid grid-cols-1  sm:flex justify-between gap-5"
                                 style="grid-auto-columns: auto;">
-                                <select class="selectize sm:w-[46%]" name="city">
-                                    {% for city in citys %}
-                                    <option value="{{ city.id }}">{{ city.name }}</option>
-                                    {% endfor %}
-                                </select>
+                                <div class="sm:w-[46%]">
+                                    <label for="apart-kategori">İl </label>
+                                    <select class="" name="city">
+                                        {% for city in citys %}
+                                        <option value="{{ city.id }}">{{ city.name }}</option>
+                                        {% endfor %}
+                                    </select>
 
-                                <select class="select-town sm:w-[46%]" name="town">
-                                </select>
+                                </div>
+                                <div class="sm:w-[46%]">
+                                    <label for="apart-kategori">İlçe</label>
+
+                                    <select class="select-town " name="town">
+                                    </select>
+                                </div>
+
                             </div>
                         </div>
 
@@ -108,7 +128,11 @@
                             <label for="">Hizmetler</label>
                             {% for service in services %}
                             <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" class="form-checkbox" name="services" value="{{ service.id }}" />
+                                <input type="checkbox" class="form-checkbox" name="services" value="{{ service.id }}" 
+                                {% if service in apart.services.all %}
+                                checked
+                                {% endif %}
+                                />
                                 <span class=" text-white-dark">{{ service.name }}</span>
                             </label>
                             {% endfor %}
@@ -119,7 +143,11 @@
                             <label for="">Faturaya Dahil Olanlar</label>
                             {% for bill in bills %}
                             <label class="flex items-center cursor-pointer">
-                                <input type="checkbox" class="form-checkbox" name="bills" value="{{ bill.id }}" />
+                                <input type="checkbox" class="form-checkbox" name="bills" value="{{ bill.id }}" 
+                                {% if bill in apart.bills.all %}
+                                checked
+                                {% endif %}
+                                />
                                 <span class=" text-white-dark">{{ bill.name }}</span>
                             </label>
                             {% endfor %}
@@ -127,11 +155,10 @@
 
                         <div>
                             <label for="">Apart Resimleri</label>
+                            
                             <div class="custom-file-container" data-upload-id="ApartImages"></div>
 
                         </div>
-
-
 
                         <div class="flex justify-end">
                             <button type="submit" class="btn btn-primary">Kaydet</button>
@@ -150,14 +177,17 @@
 <script src="/static/assets/js/jquery.js"></script>
 <script>
     var select_bind;
+    var select_city;
     var select_university;
     document.addEventListener("DOMContentLoaded", function (e) {
         var els = document.querySelectorAll(".selectize");
         els.forEach(function (select) {
             NiceSelect.bind(select, {
-                searchable: true
+                searchable: true,
+
             });
         });
+        select_city = NiceSelect.bind(document.querySelector('select[name="city"]'), { searchable: true });
         select_bind = NiceSelect.bind(document.querySelector('select[name="town"]'), { searchable: true });
         select_university = NiceSelect.bind(document.querySelector('select[name="universitys"]'), { searchable: true });
 
@@ -168,31 +198,63 @@
                 backgroundImage: '',
             },
             multiple: true,
+            accept: 'image/*',
         });
+
+        {% if apart %}
+            upload.addImagesFromPath([
+                {% for image in apart.images.all %}
+                "{{ image.image.url }}",
+                {% endfor %}
+            ])
+        {% endif %}
 
 
         $('form').on('submit', function (e) {
             e.preventDefault();
 
+            var is_empty = false;
+            $('form select').each(function () {
+                if ($(this).val() == '') {
+                    is_empty = true;
+                }
+            });
+            if (is_empty) {
+                alert('Lütfen tüm alanları doldurunuz');
+                return;
+            }
+            if ($('input[name="apart-lat"]').val() == '' || $('input[name="apart-lng"]').val() == '') {
+                alert('Lütfen apart konumunu seçiniz');
+                return;
+            }
+
+            $('form').css('opacity', '0.5').css('pointer-events', 'none');
             var formData = new FormData(this);
             upload.cachedFileArray.forEach(function (file) {
-                formData.append('files', file);
+                formData.append('files', file, file.name.split(':')[0]);
             });
 
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/apart_admin/8/apart-ekle/', true);
+            xhr.open('POST', $(this).attr('action'), true);
             xhr.onload = function () {
                 if (xhr.status === 200) {
                     console.log('Form başarıyla gönderildi');
-                    // İsteğin başarılı olduğuna dair kullanıcıya bilgi verin veya sayfayı güncelleyin
                 } else {
                     console.error('Form gönderimi başarısız');
-                    // İsteğin başarısız olduğuna dair kullanıcıya bilgi verin
                 }
             };
             xhr.send(formData);
+            $("form :input").prop("disabled", true);
 
         });
+
+
+        {% if apart %}
+        $('select[name="city"] option[value="{{ apart.town.city.id }}"]').attr('selected', 'selected');
+        $('select[name="city"]').trigger('change');
+        select_city.update();
+        {% endif %}
+
 
     });
 
@@ -209,6 +271,7 @@
         // Request needed libraries.
         //@ts-ignore
         const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
         // The map, centered at Uluru
         map = new Map(document.getElementById("map"), {
@@ -229,24 +292,29 @@
             if (marker) {
                 marker.setMap(null);
             }
-            marker = new google.maps.Marker({
+            marker = new AdvancedMarkerElement({
+                map: map,
                 position: location,
-                map: map
+                title: "",
             });
         }
+
+        {% if apart %}
+        placeMarker(new google.maps.LatLng({{ apart.lat }}, {{ apart.lon }}));
+        {% endif %}
     }
 
     initMap();
 
 
-    function addUniversity(id, name) {
+    function addUniversity(id, name, yurume="", otobus="", tramway="") {
         var html = `
         <div class="flex gap-5 items-center justify-between mt-5">
             <label style="width: 200px; text-wrap: wrap;">`+ name + `</label>
             <input type="hidden"  class="form-input " name="university_id" value="`+ id + `" style="width: 100px;"/>
-            <input type="number"  class="form-input " name="yurume" style="width: 100px;"/>
-            <input type="number"  class="form-input " name="otobus" style="width: 100px;"/>
-            <input type="number"  class="form-input " name="tramway" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="yurume"  value="`+ yurume +`" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="otobus"  value="`+ otobus +`" style="width: 100px;"/>
+            <input type="number"  class="form-input " name="tramway" value="`+ tramway +`"  style="width: 100px;"/>
             <div class="flex justify-center university-delete" style="width: 50px; text-align: center; cursor: pointer;" >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
@@ -266,11 +334,18 @@
 
     }
 
+    {% if apart %}
+    {% for distance in apart.distances.all %}
+    addUniversity({{ distance.university.id }}, "{{ distance.university.name }}", {{ distance.yurume }}, {{ distance.otobus }}, {{ distance.tramvay }});
+    {% endfor %}
+    {% endif %}
+
     $('select[name="universitys"]').on('change', function () {
         var university_id = $(this).val();
         var university_name = $(this).find('option:selected').text();
         addUniversity(university_id, university_name);
     });
+
 
 
 
@@ -290,7 +365,12 @@
                     html += '<option value="' + data.towns[i].id + '">' + data.towns[i].name + '</option>';
                 }
                 $('select[name="town"]').html(html);
+                {% if apart %}
+                $('select[name="town"] option[value="{{ apart.town.id }}"]').attr('selected', 'selected');
+                {% endif %}
+
                 select_bind.update();
+
 
                 var html = '';
                 for (var i = 0; i < data.universitys.length; i++) {
@@ -298,13 +378,10 @@
                 }
                 $('select[name="universitys"]').html(html);
                 select_university.update();
-
-
-
-
-
             }
         });
+    
+
     });
 
 
