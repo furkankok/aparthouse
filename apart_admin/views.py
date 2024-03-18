@@ -87,21 +87,8 @@ def apart_ekle(request, firm_id):
         services = ApartService.objects.filter(id__in=services)
         bills = ApartBillDetail.objects.filter(id__in=bills)
 
-        # apart = Apart(
-        #     add_by = request.user,
-        #     firma = firm,
-        #     name = request.POST['name'],
-        #     category = category,
-        #     price = request.POST['price'],
-        #     price_type = request.POST['price-type'],
-        #     info = request.POST['apart-aciklama'],
-        #     address = request.POST['apart-adres'],
-        #     lat = request.POST['apart-lat'],
-        #     lon = request.POST['apart-lng'],
-        #     town = towm,
-        # )
-        if request.POST.get('apart_id'):
-            apart = Apart.objects.filter(id=request.POST.get('apart_id')).first()
+        if request.POST.get('apart-id'):
+            apart = Apart.objects.filter(id=request.POST.get('apart-id')).first()
             if not apart:
                 messages.error(request, 'Apart bulunamadı.')
                 return redirect('index')
@@ -126,6 +113,9 @@ def apart_ekle(request, firm_id):
 
         apart.save()
 
+        for img in ApartImage.objects.filter(apart=apart):
+            img.image.storage.delete(img.image.name)
+            img.delete()
         for image in request.FILES.getlist('files'):
             ApartImage.objects.create(
                 add_by = request.user,
@@ -133,7 +123,9 @@ def apart_ekle(request, firm_id):
                 image = image
             )
         
-        
+
+        ApartDistance.objects.filter(apart=apart).delete()
+
         for index, university_id in enumerate(request.POST.getlist('university_id')):
             distance = ApartDistance(
                 apart = apart,
